@@ -1,0 +1,326 @@
+To Go or not to Go
+
+Joseph Buchma
+Gopher
+
+@josephbuchma
+
+
+* Google
+
+.image img/google.jpg
+
+* Gopher
+
+.image img/gopher.png
+
+
+* The "Go" game
+
+.image img/go-game.jpg
+
+* The motion
+
+.image img/rungopher.png
+
+* "To Go or not to Go?"
+
+.image img/shakespeare-s.jpg
+
+* To Rust or not to Rust
+
+.image img/translate.png
+
+* Introducing Go
+
+* 
+
+-  Compiles to machide code
+-  Strongly typed
+-  Concurrency support at the language level
+-  Garbage collection
+-  Testing, profiling out of box
+-  go fmt
+-  Quick compilation
+
+* Hello World
+
+.play hw.go
+
+* Quick overview
+
+* GOPATH
+
+The GOPATH environment variable lists places to look for Go code.
+
+What's inside:
+
+-  *bin*  - compiled binaries goes here
+-  *pkg*  - package objects
+-  *src*  - source code files (third party & your *packages*)
+
+______________________________________________________________________________________
+
+*go* *get* github.com/stretchr/testify
+
+* Import
+
+  package mypackage
+
+  import (
+    "github.com/stretchr/testify"
+  )
+
+
+* Using imported packages
+
+  In Golang               In python                      Local name of Sin
+
+  import   "lib/math"     import lib.math                math.Sin
+  import m "lib/math"     import lib.math as m           m.Sin
+  import . "lib/math"     from lib.math import *         Sin
+
+
+* Slices and maps
+
+  var strSlice []string // unallocated strings slice, eql `nil`.
+  var xmap map[string]int // == nil
+
+
+Basic usage:
+
+  strSlice = make([]string, 5)
+  xmap = make(map[string]int)
+
+  strSlice[0] = 234
+  strSlice = append(strSlice, 2,4,5)
+
+  xmap["foo"] = 123
+
+  for key, value := range xmap {
+    /* ... */
+  }
+
+
+
+* Features
+
+* Multiple returns (possibly named)
+
+.code server.go /FBB OMIT/,/FBB OMIT/
+
+* FooBarBaz test-drive
+
+.code server.go /checkFBB OMIT/,/checkFBB OMIT/
+
+Main:
+
+.play server.go /CHECKFBB OMIT/,/CHECKFBB OMIT/
+
+
+* Functions are first-class objects
+
+
+  var funcHandler func(int, int)bool
+
+  var exit = func(int status) {
+    os.Exit(status)
+  }
+
+* Closures
+
+.code server.go /FBBClosure OMIT/,/FBBClosure OMIT/
+
+Main:
+
+.play server.go /MFBBClosure OMIT/,/MFBBClosure OMIT/
+
+
+* Defer
+
+  func somefunc() {
+    f, err := os.Open("/path/to/file")
+    if err != nil {
+      return
+    }
+    defer f.Close()
+    //....
+  }
+
+
+* Custom types & methods
+
+.code tutor.go /CustomTypes OMIT/,/CustomTypes OMIT/
+
+* Types & methods showcase
+
+.code tutor.go /CustomTypesShowcase OMIT/,/CustomTypesShowcase OMIT/
+
+Main:
+
+.play tutor.go /CustomTypesShowcaseM OMIT/,/CustomTypesShowcaseM OMIT/
+
+
+* Structs embedding
+
+.code tutor.go /EmbeddingStructs OMIT/,/EmbeddingStructs OMIT/
+
+Main:
+
+.play tutor.go /EmbeddingStructsM/,/EmbeddingStructsM/
+
+
+* Interfaces
+
+
+* Specify the behavior of an object
+
+if something can do _this_, then it can be used _here_.
+Satisfy interface by defining all methods it requires with exact signatures.
+
+  // built in error interface
+  type error interface {
+    Error() string
+  }
+
+  // io.Reader
+  type Reader interface {
+    Read(p []byte) (n int, err error) // reads up to len(p) bytes into p
+  }
+  // io.Writer
+  type Writer interface {
+    Write(p []byte) (n int, err error) // writes len(p) bytes from p to the underlying data stream
+  }
+  // io.ReadWriter
+  // Embedding                                     // same as
+  type ReadWriter interface {                      type ReadWriter interface {
+    Reader                                           Read(p []byte) (n int, err error)
+    Writer                                           Write(p []byte) (n int, err error)
+  }                                                }
+
+* Example: log.New
+
+log.New's first parameter accepts anything that allows to write into it
+(anything that implements io.Writer interface)
+
+  func New(out io.Writer, prefix string, flag int) *Logger
+
+* Type switch
+
+.image img/bb.jpg
+
+* Type switch
+
+.code tutor.go /TypeSwitch OMIT/,/TypeSwitch OMIT/
+
+* The type switch itself
+
+.code tutor.go /TypeSwitchExample OMIT/,/TypeSwitchExample OMIT/
+
+Main:
+
+.play tutor.go /TypeSwitchExampleM OMIT/,/TypeSwitchExampleM OMIT/
+
+
+* Interface names
+
+By convention, one-method interfaces are named by the method name plus an -er suffix or similar modification
+to construct an agent noun: Reader, Writer, Formatter, CloseNotifier etc.
+
+Read, Write, Close, Flush, String and so on have canonical signatures and meanings.
+To avoid confusion, don't give your method one of those names unless it has the same signature and meaning.
+
+
+* The bigger the interface, the weaker the abstraction.
+
+* Empty interface
+
+.code tutor.go /EmptyInterfaces OMIT/,/EmptyInterfaces OMIT/
+
+Main:
+
+.play tutor.go /EmptyInterfacesM OMIT/,/EmptyInterfacesM OMIT/
+
+* interface{} says nothing
+
+
+* Concurrency
+
+* ...consists of
+
+- *go* statement (goroutines)
+- *channels*
+- *select* statement
+- *sync* package
+
+
+* Hello Concurrent World!
+
+.play -edit hwc.go
+
+
+* FooBarBaz HTTP Server
+
+.code server.go /FBBSrv OMIT/,/FBBSrv OMIT/
+
+Main:
+
+.play server.go /STARTFBBSRV OMIT/,/STARTFBBSRV OMIT/
+
+
+
+* FooBarBaz HTTP Client
+
+.code fbb_client.go /GetFBB OMIT/,/GetFBB OMIT/
+
+
+* FooBarBaz HTTP Client
+
+.code fbb_client.go /FBBHTTP OMIT/,/FBBHTTP OMIT/
+
+Main:
+
+.play -edit fbb_client.go /FBBHTTPM OMIT/,/FBBHTTPM OMIT/
+
+* FooBarBaz HTTP Concurrent Client
+
+.code fbb_client.go /FBBHTTPConcurrent OMIT/,/FBBHTTPConcurrent OMIT/
+
+Main:
+
+.play fbb_client.go /FBBHTTPConcurrentM OMIT/,/FBBHTTPConcurrentM OMIT/
+
+* FooBarBaz HTTP Concurrent Client Ordered
+
+.code fbb_client.go /FBBHTTPConcurrentSorted OMIT/,/FBBHTTPConcurrentSorted OMIT/
+
+Main:
+
+.play fbb_client.go /FBBHTTPConcurrentSortedM OMIT/,/FBBHTTPConcurrentSortedM OMIT/
+
+* FooBarBaz HTTP Concurrent Client Fan-in Fan-out (1)
+
+.code fbb_client.go /FBBNUMGEN OMIT/,/FBBNUMGEN OMIT/
+
+* FooBarBaz HTTP Concurrent Client Fan-in Fan-out (2)
+
+.code fbb_client.go /FBBHTTPConcurrentFanInFanOut OMIT/,/FBBHTTPConcurrentFanInFanOut OMIT/
+
+Main:
+
+.play fbb_client.go /FBBHTTPConcurrentFanInFanOutM OMIT/,/FBBHTTPConcurrentFanInFanOutM OMIT/
+
+* Explicit cancellation and select statement
+
+.code fbb_client.go /FBBNUMGENCANCEL OMIT/,/FBBNUMGENCANCEL OMIT/
+
+* 
+
+.code fbb_client.go /FBBHTTPConcurrentFanInFanOutCancel OMIT/,/FBBHTTPConcurrentFanInFanOutCancel OMIT/
+
+* 
+
+Main:
+
+.play fbb_client.go /FBBHTTPConcurrentFanInFanOutCancelM OMIT/,/FBBHTTPConcurrentFanInFanOutCancelM OMIT/
+
